@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse
 
+
 def home(request):
     return HttpResponse("Middleware API is running ")
 
@@ -25,4 +26,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('gateway.urls')),
     path('',home),
+     path("api/reporting/create", include("integration.router")),
+    
+   
+    
+    
 ]

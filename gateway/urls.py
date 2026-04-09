@@ -1,7 +1,11 @@
 from django.urls import path
 from . import views
 
+from django.urls import path
+from .views import api_gateway
+
 urlpatterns = [
-    path('', views.api_entry),
-    path('health/', views.health),
+    
+    path('<path:path>/', api_gateway),
+    path('', api_gateway),  # root
 ]
