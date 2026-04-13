@@ -12,7 +12,9 @@ def process_request(path, body, method):
 
     print("DEBUG:", system, action)
     if system == "reports":
-        return sysA.handle(action, body, method)
+        return sysA.handle(system,action, body, method)
+    elif system == "interns":
+        return sysA.handle(system, action, body, method)
     else:
         return {"error": "Unknown system"}
 

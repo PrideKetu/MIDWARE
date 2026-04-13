@@ -2,12 +2,12 @@ import requests
 
 BASE_URL = "http://127.0.0.1:8001"
 
-def handle(action, body, method):
+def handle(system, action, body, method):
     
     if action:
-        url += f"{BASE_URL}/{action}/"
+        url = f"{BASE_URL}/{system}/{action}"
     else:
-        url = f"{BASE_URL}/reports/"    
+        url = f"{BASE_URL}/{system}/"    
 
     try:
         # Make the HTTP request
