@@ -18,24 +18,17 @@ def process_request(path, body, method):
     else:
         return {"error": "Unknown system"}
 
+from connectors.ExpressConnect import forward_report_to_express
 
+def route_request(target_system, data):
+    cleaned = str(target_system).strip().lower()
 
-"""
+    if cleaned == "express":
+        
+        return forward_report_to_express(data)
 
-    if system == "reports":
-        if method == "GET":
-            return {"message": "GET reports working"}
-
-        elif method == "POST":
-            return {"message": "POST reports working"}
-
-    return {"error": "Invalid route"}
-from connectors.restconnect import handle_rest
-
-def route_request(request):
-    # simple logic for now
-    if request.path.startswith('/api/test'):
-        return handle_rest(request)
-    
-    return {"error": "No route found"}"""
-    
+    print("NO MATCH")
+    return {
+        "status": "error",
+        "message": f"Unknown target system: {cleaned}"
+    }
