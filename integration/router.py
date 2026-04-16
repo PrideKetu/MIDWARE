@@ -6,15 +6,24 @@ urlpatterns = [
     path("create", views.create_report, name="create_report"),
 ]
 def process_request(path, body, method):
-    parts = path.split("/")
-    system = parts[0] if len(parts) > 0 else None
-    action = parts[1] if len(parts) > 1 else None
 
-    print("DEBUG:", system, action)
+    parts = path.strip("/").split("/")
+
+    # remove api prefix if present
+    if parts[0] == "api":
+        parts = parts[1:]
+
+    system = parts[0] if len(parts) > 0 else None
+    action = parts[1] if len(parts) > 1 else None   # IMPORTANT: use None not ""
+
+    print("DEBUG:", system, action, method)
+
     if system == "reports":
-        return sysA.handle(system,action, body, method)
+        return sysA.handle(system, action, body, method)
+
     elif system == "interns":
         return sysA.handle(system, action, body, method)
+
     else:
         return {"error": "Unknown system"}
 

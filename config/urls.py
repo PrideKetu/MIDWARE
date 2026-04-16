@@ -26,7 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('gateway.urls')),
     path('',home),
-     path("api/reporting/create", include("integration.router")),
+    
     
    
     
