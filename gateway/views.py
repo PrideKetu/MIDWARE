@@ -1,31 +1,58 @@
-from integration.router import process_request
+from integration.router import route_request   # ✅ only import what we use
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-@csrf_exempt 
+
+
+# =========================
+# ❌ OLD GENERIC API GATEWAY (DISABLED)
+# =========================
+
+# from integration.router import process_request, route_request
+#
+# @csrf_exempt
+# def api_gateway(request, path=""):
+#
+#     body = {}
+#
+#     if request.method in ["POST", "PUT", "PATCH"]:
+#         try:
+#             body = json.loads(request.body)
+#         except:
+#             body = {}
+#
+#     response = process_request(path, body, request.method)
+#
+#     return JsonResponse(response, safe=False)
+
+
+# =========================
+# ✅ ACTIVE PIPELINE ENTRY POINT
+# =========================
+
 @csrf_exempt
-def api_gateway(request, path=""):
+def forward_report(request):
 
-    body = {}
+    if request.method == "POST":
 
-    if request.method in ["POST", "PUT", "PATCH"]:
-        try:
-            body = json.loads(request.body)
-        except:
-            body = {}
+        data = {
+            "title": request.POST.get("title"),
+            "intern_id": request.POST.get("intern_id")
+        }
 
-    response = process_request(path, body, request.method)
-    return JsonResponse(response, safe=False)
+        file = request.FILES.get("pdf_file")
 
-from integration.router import route_request
-def test_express(request, system):
-    print("VIEW SYSTEM:", system)
-    data = {
-        "title": "Middleware Report",
-        "intern_id": 101,
-        "description": "Testing Express integration"
-    }
+        print("\n🔥 GATEWAY RECEIVED:", data)
 
-    result = route_request(system, data)
+        # 🛑 GUARD (VERY IMPORTANT)
+        if not data["title"]:
+            print("❌ INVALID DATA FROM DJANGO")
+            return JsonResponse({"error": "Invalid data"}, status=400)
 
-    return JsonResponse(result)
+        result = route_request("express", data, file)
+
+        print("📡 GATEWAY RESPONSE:", result)
+
+        return JsonResponse(result)
+
+    return JsonResponse({"error": "Only POST allowed"})

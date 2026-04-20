@@ -1,14 +1,19 @@
 from django.urls import path
-from . import views
+from .views import  forward_report
 
-from django.urls import path
-from .views import api_gateway
-from .views import test_express
 
 urlpatterns = [
-    path("send/<str:system>/", test_express),
-    path('<path:path>/', api_gateway),
-    path('', api_gateway),  # root
-   
-    
+
+    # =========================
+    # ✅ SPECIFIC ROUTES FIRST (VERY IMPORTANT)
+    # =========================
+
+    path('forward/', forward_report),   # ✅ FIXED SPELLING
+
+    # =========================
+    # ⚠️ CATCH-ALL ROUTE LAST
+    # =========================
+
+    #path('', api_gateway),
+    #path('<path:path>/', api_gateway),
 ]
