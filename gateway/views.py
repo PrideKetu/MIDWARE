@@ -3,29 +3,25 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-
-# =========================
-# ❌ OLD GENERIC API GATEWAY (DISABLED)
-# =========================
-
-# from integration.router import process_request, route_request
-#
-# @csrf_exempt
-# def api_gateway(request, path=""):
-#
-#     body = {}
-#
-#     if request.method in ["POST", "PUT", "PATCH"]:
-#         try:
-#             body = json.loads(request.body)
-#         except:
-#             body = {}
-#
-#     response = process_request(path, body, request.method)
-#
-#     return JsonResponse(response, safe=False)
+from integration.services.campusroute import handle_campus_route
 
 
+@csrf_exempt
+def receive_student(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST is allowed"}, status=405)
+
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    result = handle_campus_route(payload)
+
+    if result.get("ok"):
+        return JsonResponse(result, status=200)
+
+    return JsonResponse(result, status=400)
 # =========================
 # ✅ ACTIVE PIPELINE ENTRY POINT
 # =========================
@@ -44,9 +40,9 @@ def forward_report(request):
 
         print("\n🔥 GATEWAY RECEIVED:", data)
 
-        # 🛑 GUARD (VERY IMPORTANT)
+        # GUARD (VERY IMPORTANT)
         if not data["title"]:
-            print("❌ INVALID DATA FROM DJANGO")
+            print("INVALID DATA FROM DJANGO")
             return JsonResponse({"error": "Invalid data"}, status=400)
 
         result = route_request("express", data, file)

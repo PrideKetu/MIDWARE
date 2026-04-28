@@ -6,7 +6,7 @@ def forward_report_to_express(data, file=None):
     response = requests.post(
         "http://127.0.0.1:4000/api/reports",
 
-        data=data,   # ✅ USE WHAT YOU RECEIVED DIRECTLY
+        data=data,   # USE WHAT YOU RECEIVED DIRECTLY
 
         files={
             "pdf_file": file.file

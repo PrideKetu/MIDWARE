@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import  forward_report
 
-
+from gateway.views import receive_student
 urlpatterns = [
 
     # =========================
@@ -9,7 +9,7 @@ urlpatterns = [
     # =========================
 
     path('forward/', forward_report),   # ✅ FIXED SPELLING
-
+    path("incoming/students/", receive_student, name="receive-student"),
     # =========================
     # ⚠️ CATCH-ALL ROUTE LAST
     # =========================
