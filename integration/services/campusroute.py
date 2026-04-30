@@ -1,5 +1,5 @@
-from connectors.CampusAY  import send_to_yaounde
-from connectors.CampusBD import send_to_douala
+from connectors.CampusAY  import send_to_yaounde, delete_in_yaounde
+from connectors.CampusBD import send_to_douala, delete_in_douala
 
 
 def handle_campus_route(payload):
@@ -39,6 +39,43 @@ def handle_campus_route(payload):
         }
 
     # Handle connector failure
+    if not connector_result.get("ok"):
+        return {
+            "ok": False,
+            "source_campus": source_campus,
+            "target_campus": target_campus,
+            "forward_result": connector_result,
+        }
+
+    return {
+        "ok": True,
+        "source_campus": source_campus,
+        "target_campus": target_campus,
+        "forward_result": connector_result,
+    }
+    
+def handle_campus_delete(payload):
+    student_id = payload.get("student_id")
+    source_campus = payload.get("campus")
+
+    if not student_id or not source_campus:
+        return {
+            "ok": False,
+            "error": "student_id and campus are required",
+        }
+
+    if source_campus == "Yaounde":
+        target_campus = "Douala"
+        connector_result = delete_in_douala(student_id)
+    elif source_campus == "Douala":
+        target_campus = "Yaounde"
+        connector_result = delete_in_yaounde(student_id)
+    else:
+        return {
+            "ok": False,
+            "error": f"Unknown campus '{source_campus}'",
+        }
+
     if not connector_result.get("ok"):
         return {
             "ok": False,

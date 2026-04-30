@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-from integration.services.campusroute import handle_campus_route
+from integration.services.campusroute import handle_campus_route, handle_campus_delete
 
 
 @csrf_exempt
@@ -22,6 +22,25 @@ def receive_student(request):
         return JsonResponse(result, status=200)
 
     return JsonResponse(result, status=400)
+
+
+@csrf_exempt
+def delete_student(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST is allowed"}, status=405)
+
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    result = handle_campus_delete(payload)
+
+    if result.get("ok"):
+        return JsonResponse(result, status=200)
+
+    return JsonResponse(result, status=400)
+
 # =========================
 # ✅ ACTIVE PIPELINE ENTRY POINT
 # =========================

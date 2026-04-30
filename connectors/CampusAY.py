@@ -34,3 +34,29 @@ def send_to_yaounde(payload):
             "ok": False,
             "error": f"Connection error: {error.reason}",
         }
+
+
+def delete_in_yaounde(student_id):
+    req = request.Request(
+        f"{YAOUNDE_URL.rsplit('/receive', 1)[0]}/receive/{student_id}",
+        method="DELETE",
+    )
+
+    try:
+        with request.urlopen(req, timeout=10) as response:
+            raw = response.read().decode("utf-8")
+            return {
+                "ok": True,
+                "status_code": response.status,
+                "response": json.loads(raw),
+            }
+    except HTTPError as error:
+        return {
+            "ok": False,
+            "error": f"HTTP error: {error.code}",
+        }
+    except URLError as error:
+        return {
+            "ok": False,
+            "error": f"Connection error: {error.reason}",
+        }
